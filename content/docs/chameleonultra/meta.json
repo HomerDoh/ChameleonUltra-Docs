@@ -5,15 +5,6 @@
     "pages": [
         "---使用指南---",
         "index",
-        "chameleonultra-intro",
-        "---常用操作---",
-        "write-card",
-        "write-device",
-        "update-firmware",
-        "---常见问题---",
-        "rolling-code",
-        "connection-problem",
-        "device-freeze",
-        "faq"
+        "chameleonultra-intro"
     ]
 }

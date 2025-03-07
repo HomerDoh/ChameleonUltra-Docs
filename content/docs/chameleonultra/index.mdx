@@ -8,15 +8,15 @@ import { File, Folder, Files } from "fumadocs-ui/components/files";
 import Link from "next/link";
 
 # 软件连接
-
-从下方列表中，选择合适的客户端下载安装；windows 客户端仅支持 win10/11 系统。IOS 和 Mac 客户端请在应用商店搜索 Chameleon Ultra GUI 下载
+<iframe src="//player.bilibili.com/player.html?bvid=BV1cGC3Y2Ebj&page=1" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+从下方列表中，选择合适的客户端下载安装；IOS 和 Mac 客户端请在应用商店搜索 Chameleon Ultra GUI 下载
 
 <Files>
   <Folder name="变色龙控制端" defaultOpen>
-    <Link href="https://chameleonultra.cn/windows%E5%AE%89%E8%A3%85%E5%8C%85.exe">
+    <Link href="https://playerone.tech/windows%E5%AE%89%E8%A3%85%E5%8C%85.exe">
       <File name="Win10/11" />
     </Link>
-    <Link href="https://chameleonultra.cn/%E5%AE%89%E5%8D%93%E5%AE%89%E8%A3%85%E5%8C%85.apk">
+    <Link href="https://playerone.tech/%E5%AE%89%E5%8D%93%E5%AE%89%E8%A3%85%E5%8C%85.apk">
       <File name="安卓安装包" />
     </Link>
   </Folder>
@@ -24,17 +24,20 @@ import Link from "next/link";
 
 1. 手机需要打开蓝牙，并授权 APP 蓝牙和定位权限； 请在 APP 内连接设备。
 2. 电脑请使用数据线连接设备， 仅支持 win10/11。
-3. 如果连接不上， 检查设备是否唤醒，连接过程中保持变色龙开启，多次刷新 APP 尝试。
+3. 如果连接不上， 检查设备是否唤醒，连接过程中保持变色龙开启，多次刷新应用尝试。
 
 # 读卡
 
 ## 判断卡片类型
 
-使用变色龙读取卡片，高频能读到就是 IC 卡，低频能读到就是 ID 卡。注意读高频使用正面（滴胶面）贴近卡片，读低频使用背面（图案面）贴近卡片，两面板子对应不同的频率。
+使用变色龙读取卡片，高频能读到就是 IC 卡，低频能读到就是 ID 卡。注意读高频使用正面（滴胶面）贴近卡片，读低频使用背面（图案面）贴近卡片，两面主板线圈频率不同。
 
+<Cards>
+  <Card title="客户端高低频读取功能">![frequency](/image/frequency.jpg)</Card>
+</Cards>
 其中 IC 卡根据 SAK 响应码可分为：
 
-- `08`代表 S50 卡
+- `08`代表 S50 卡(常称为 M1 卡，08 卡)
 - `18`代表 S70 卡
 - `20`代表 CPU 卡
 - `28`代表 CPU 模拟卡
@@ -43,11 +46,16 @@ import Link from "next/link";
 
 ## IC 卡读取
 
-IC 卡根据加密方式可分为：
+M1 卡共有 16 扇区，每个扇区有 4 个区块。其中，每个扇区最后一个区块是控制块，前六个字节用于储存 A 密钥，后 6 个字节用于储存 B 密钥，中间 4 个字节用于储存存取控制信息。
 
-- 非加密 IC 卡
-- 半加密 IC 卡
-- 全加密 IC 卡
+<Cards>
+  <Card title="M1卡数据结构">![M1](/image/m1-data.png)</Card>
+</Cards>
+也就是说，一个卡片中最多有32个密钥。根据密钥的加密方式，可以分为以下三种：{" "}
+
+- 非加密: IC 卡：所有密钥均为默认密码`FFFFFFFF`。
+- 半加密 IC 卡: 存在一个或以上的密码是默认密码。
+- 全加密 IC 卡：所有密码都不是默认密码。
 
 我们采取依次尝试的办法可以确定卡片加密方式，并破解卡片
 
@@ -55,15 +63,33 @@ IC 卡根据加密方式可分为：
 
 <div className="fd-steps">
   <div className="fd-step">使用空密钥从词典中检索密钥</div>
+  <iframe src="//player.bilibili.com/player.html?bvid=BV1wuC3YUE2b&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
   此时变色龙会使用 S50 默认的空白密码`FFFFFFFF`依次解密扇区，当然最好的情况是16个扇区的32个密钥都解密成功，这也说明这是一张非加密的IC卡。如果有密钥没有解成功，继续尝试下面的办法
-  <div className="fd-step">使用`知一求全`根据已知密钥获取全部密钥</div>
-  如果部分密钥解密成功，可以使用Nested攻击，俗称`知一求全`，根据已知密钥获取全部密钥。点击获取密钥按钮开始攻击，尝试获取密钥。
+  <Cards>
+    <Card>![M1](/image/empty-password.jpg)</Card>
+  </Cards>
+  <div className="fd-step">使用 Nested 攻击</div>
+  <iframe src="//player.bilibili.com/player.html?bvid=BV1wuC3YUE2b&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+  如果部分密钥解密成功，可以使用Nested攻击，俗称`知一求全`，根据已知密钥获取全部密钥。点击获取密钥按钮开始攻击，尝试获取全部密钥。
+  <Cards>
+    <Card>![M1](/image/nested-attack.png)</Card>
+  </Cards>
   <div className="fd-step">使用嗅探攻击</div>
-  如果很不幸，以上办法都失败了，那么还有最后一种较为有效的办法，使用MFKEY32攻击，俗称`嗅探`；
-  1. 选择仅保存UID，保存这张卡片；UID是卡片的卡号，通过卡号来跟读头进行通信，已便获取到密钥
-  2. 在卡槽管理页面，选择任意一个卡槽点击弹出卡包页面，装载刚才保存的卡 3. 点击卡槽设置按钮，高频卡设置铅笔图标，滑到最底部，将收集Mfkey32选项打开
-  4. 将变色龙切换到对应的卡槽，使用滴胶面贴近读头放4次； 5. 此时手机随机数选项下面会出现获取密钥按钮，点击获取密钥按钮，等待获取密钥完成，即可获取到密钥
-  5. 保存获取到的密钥到词典中，用这个词典重新读取卡片
+  <iframe src="//player.bilibili.com/player.html?bvid=BV1jCCGY5E1r&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+  如果很不幸，以上办法都失败了，那么还有最后一种较为有效的办法，使用 MFKEY32 攻击，俗称`嗅探`；嗅探的原理是复制卡片的卡号跟读头通信，它通过捕获
+  **认证握手数据**，结合 **改进算法**，快速计算出卡片密钥 
+  1. 选择仅保存UID，保存并给卡片命名方便辨认；UID是卡片的卡号，通过卡号来跟读头进行通信，已便获取到密钥数据。
+  2. 在卡槽管理页面，点击一个空白卡槽，在弹出的卡包页面装载刚才保存的卡。 
+  3. 在卡槽管理页面，点击刚才卡槽右下角的设置图标，并进入高频卡设置页面，滑到最底部，收集Mfkey32选项选择是，保存。
+  4. 将变色龙切换到对应的卡槽，使用滴胶面贴近读头放4次； 
+  5. 此时Mfkey32选项下面会出现获取密钥按钮，点击获取密钥按钮，等待获取密钥完成；如果一分钟还没有获取到，说明嗅探无法破解此卡片，可以放弃了。 
+  6. 保存获取到的密钥到词典中，用这个词典重新读取卡片。将解密的卡片保存到卡包中，方便后续操作。
+  <Cards>
+    <Card>![Slug-Setting](/image/slug-setting.png)</Card>
+    <Card>![Mfkey32](/image/mfkey32.png)</Card>
+    <Card>![Mfkey32-Getting](/image/mfkey32-getting.png)</Card>
+    <Card>![Sniffing-Read](/image/sniffing-read.png)</Card>
+  </Cards>
 </div>
 
 ## ID 卡读取
@@ -72,6 +98,12 @@ ID 卡因为没有数据区域也没有密码，所以读取非常简单，只�
 
 # 写数据到变色龙
 
-1. 选择卡槽管理页面
+通过刚才的操作，我们就获取到了卡片数据，注意 IC 卡一定要获取到每个区块的密钥，否则大多数情况卡数据是无效的。接下来就可以通过简单几步将数据写入到变色龙中。
+
+1. 进入卡槽管理页面
 2. 点击一个未使用的卡槽，弹出已保存的卡片列表
 3. 点击卡片即可写入
+4. 刷卡时，使用按键切换到对应卡槽，IC卡用滴胶面贴近刷，ID卡用图案面贴近刷。
+   <Callout title="刷卡前注意" type="warn">
+     复制后第一次刷卡先刷原卡（物业发的卡），然后再刷变色龙。此种方法可以规避大部分滚动码导致原卡失效的问题。
+   </Callout>
