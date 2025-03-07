@@ -1,0 +1,19 @@
+{
+    "title": "ChameleonUltra",
+    "description": "变色龙Ultra 文档",
+    "root": true,
+    "pages": [
+        "---使用指南---",
+        "index",
+        "chameleonultra-intro",
+        "---常用操作---",
+        "write-card",
+        "write-device",
+        "update-firmware",
+        "---常见问题---",
+        "rolling-code",
+        "connection-problem",
+        "device-freeze",
+        "faq"
+    ]
+}
